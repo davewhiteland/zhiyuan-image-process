@@ -1,0 +1,12 @@
+{% extends 'base.html' %} 
+{% block container %}
+
+  <div class="image-processing-result">
+    <p>{{msg|safe}}</p>
+    <img src="{{b64_image_data}}"/>
+    <p>
+      <a href="/">try another</a>
+    </p>
+  </div>
+
+{% endblock %}

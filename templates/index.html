@@ -1,0 +1,62 @@
+{% extends 'base.html' %} 
+{% block container %}
+  <div class="wrapper">
+    <div class="image-input">
+      <canvas id="canvas" width="400" height="400"></canvas>
+      <div class="buttons">
+        <input type="button" value="Clear" id="button-clear" />
+        <form id="form" method="post" action="result">
+          <input type="button" value="Submit" id="button-submit" />
+          <input type="hidden" value="" name="image-data" id="image-data"/>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script>
+    $(document).ready(function() {
+      var pen_thick = 16;
+      var pen_color = 'black';
+      var is_drawing = false;
+      var $canvas = $('#canvas');
+      var ctx = $canvas[0].getContext('2d');
+      var prev_x = undefined, prev_y; // explictly testing prev_x below
+      var $form = $('#form');
+    
+      $canvas.on('mousemove mousedown mouseup mouseout', function(e) {
+        if (e.type == 'mousedown') {
+          is_drawing = true;
+        } else if (e.type == 'mouseup' || e.type == 'mouseout') {
+          is_drawing = false;
+          prev_x = undefined;
+        } else if (e.type == 'mousemove' && is_drawing) {
+          var x = e.clientX - $canvas.offset().left;
+          var y = e.clientY - $canvas.offset().top;
+          ctx.beginPath();
+          if (prev_x != undefined && (prev_x != x || prev_y != y)) {
+            ctx.lineWidth = pen_thick;
+            ctx.moveTo(prev_x, prev_y);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+          }
+          ctx.arc(x, y, pen_thick/2, 0, 2 * Math.PI, false);
+          ctx.fillStyle = pen_color;
+          ctx.fill();
+          ctx.closePath();
+          prev_x = x;
+          prev_y = y;
+        }
+      });
+
+      $('#button-clear').on('click', function(e) {
+        ctx.clearRect(0, 0, $canvas.width(), $canvas.height());
+        $debug_output.html("");
+      });
+
+      $('#button-submit').on('click', function(e) {
+        e.preventDefault();
+        $form.find('#image-data').val($canvas[0].toDataURL());
+        $form.submit();
+      });
+    });
+  </script>
+{% endblock %}
