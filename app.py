@@ -36,5 +36,8 @@ def process_image():
         image.width, image.height, black_pixels,
         'is' if black_pixels == 1 else 'are')
     )
+    total_pixels = image.width * image.height
+    if total_pixels > 0:
+      msg_html += " ({}%)".format(int(100 * black_pixels / total_pixels))
     return render_template('result.html', msg=msg_html, b64_image_data=b64_image_data)
 
